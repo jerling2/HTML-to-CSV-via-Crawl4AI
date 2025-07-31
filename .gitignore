@@ -1,3 +1,16 @@
+# Sensitive Data
+data/*
+json_out/*
+tsv_out/*
+
+# Allow example data
+!data/example 
+
+# Make sure these directories exist
+!data/.gitkeep
+!json_out/.gitkeep
+!tsv_out/.gitkeep
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]

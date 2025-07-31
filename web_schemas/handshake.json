@@ -1,0 +1,59 @@
+{
+    "name": "Handshake",
+    "baseSelector": "main > div",
+    "fields": [
+        {
+            "name": "header",
+            "selector": "main > div > h1:first-child",
+            "type": "text"
+        },
+        {
+            "name": "cards",
+            "selector": "main > div > h1 + div > div",
+            "type": "list",
+            "fields": [
+                {
+                    "name": "href",
+                    "selector": "main > div > h1 + div > div > a",
+                    "type": "attribute",
+                    "attribute": "href"
+                },
+                {
+                    "name": "company",
+                    "selector": "main > div > h1 + div > div > a + div + div > div > div:first-child > div > span",
+                    "type": "text"
+                },
+                {
+                    "name": "position",
+                    "selector": "main > div > h1 + div > div > a + div + div > div > div + div > div > div:first-child",
+                    "type": "text"
+                },
+                {
+                    "name": "pay",
+                    "selector": "main > div > h1 + div > div > a + div + div > div > div + div > div > div + div > div",
+                    "type": "text"
+                },
+                {
+                    "name": "type",
+                    "selector": "main > div > h1 + div > div > a + div + div > div > div + div > div > div + div > div",
+                    "type": "text"
+                },
+                {
+                    "name": "duration",
+                    "selector": "main > div > h1 + div > div > a + div + div > div > div + div > div > div + div > div",
+                    "type": "text"
+                },
+                {
+                    "name": "location",
+                    "selector": "main > div > h1 + div > div > a + div + div > div + div > div > span > span",
+                    "type": "text"
+                },
+                {
+                    "name": "deadline",
+                    "selector": "main > div > h1 + div > div > a + div + div > div + div > div > span > span",
+                    "type": "text"
+                }
+            ]
+        }
+    ]
+}
