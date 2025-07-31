@@ -2,16 +2,6 @@ from src.shell import Shell
 import csv
 
 
-FILTER_MAP = {
-    "handshake_extend_href": handshake_extend_href,
-    "handshake_extract_pay": handshake_extract_pay,
-    "handshake_extract_type": handshake_extract_type,
-    "handshake_extract_duration": handshake_extract_duration,
-    "handshake_extract_location": handshake_extract_location,
-    "handshake_extract_deadline": handshake_extract_deadline
-}
-
-
 def NOOP(text: str) -> str:
     return text
 
@@ -58,6 +48,16 @@ def handshake_extract_deadline(text: str) -> str:
     if len(tokens) < 2:
         return "N/A"
     return tokens[1]
+
+
+FILTER_MAP = {
+    "handshake_extend_href": handshake_extend_href,
+    "handshake_extract_pay": handshake_extract_pay,
+    "handshake_extract_type": handshake_extract_type,
+    "handshake_extract_duration": handshake_extract_duration,
+    "handshake_extract_location": handshake_extract_location,
+    "handshake_extract_deadline": handshake_extract_deadline
+}
 
 
 class TableGenerator(Shell):
