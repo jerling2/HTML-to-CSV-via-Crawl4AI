@@ -1,5 +1,5 @@
 {
-    "description": "Complementary table schema for the `example` web schema",
+    "description": "Complementary table schema for the `handshake` web schema",
     "selector": "cards",
     "headers": [
         "href",
