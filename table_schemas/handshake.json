@@ -1,0 +1,22 @@
+{
+    "description": "Complementary table schema for the `example` web schema",
+    "selector": "cards",
+    "headers": [
+        "href",
+        "company",
+        "position",
+        "pay",
+        "type",
+        "duration",
+        "location",
+        "deadline"
+    ],
+    "filters": {
+        "href": "handshake_extend_href",
+        "pay": "handshake_extract_pay",
+        "type": "handshake_extract_type",
+        "duration": "handshake_extract_duration",
+        "location": "handshake_extract_location",
+        "deadline": "handshake_extract_deadline"
+    }
+}
