@@ -1,10 +1,20 @@
 from src.shell import Shell
 import csv
-import re
+
+
+FILTER_MAP = {
+    "handshake_extend_href": handshake_extend_href,
+    "handshake_extract_pay": handshake_extract_pay,
+    "handshake_extract_type": handshake_extract_type,
+    "handshake_extract_duration": handshake_extract_duration,
+    "handshake_extract_location": handshake_extract_location,
+    "handshake_extract_deadline": handshake_extract_deadline
+}
 
 
 def NOOP(text: str) -> str:
     return text
+
 
 def handshake_extend_href(text: str) -> str:
     result = "https://uoregon.joinhandshake.com" + text
@@ -27,12 +37,14 @@ def handshake_extract_type(text: str) -> str:
         return "N/A"
     return filtered[0].strip()
 
+
 def handshake_extract_duration(text: str) -> str:
     tokens = text.split('\u00b7')
     filtered = list(filter(lambda t: "\u2014" in t, tokens))
     if not filtered:
         return "N/A"
     return filtered[0].strip()
+
 
 def handshake_extract_location(text: str) -> str:
     tokens = text.split('\u00b7')
@@ -46,16 +58,6 @@ def handshake_extract_deadline(text: str) -> str:
     if len(tokens) < 2:
         return "N/A"
     return tokens[1]
-
-
-FILTER_MAP = {
-    "handshake_extend_href": handshake_extend_href,
-    "handshake_extract_pay": handshake_extract_pay,
-    "handshake_extract_type": handshake_extract_type,
-    "handshake_extract_duration": handshake_extract_duration,
-    "handshake_extract_location": handshake_extract_location,
-    "handshake_extract_deadline": handshake_extract_deadline
-}
 
 
 class TableGenerator(Shell):
