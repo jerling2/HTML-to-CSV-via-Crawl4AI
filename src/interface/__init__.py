@@ -1,5 +1,5 @@
-from .lib.shell import Shell
-from .lib.user_mode import UserMode
+from .abstracts.shell import Shell
+from .abstracts.user_mode import UserMode
 from .modes.file_processor import FileProcessor
 from .modes.file_processor import FileProcessor
 from .modes.system_mode import SystemMode
