@@ -43,6 +43,10 @@ def handshake_extract_location(text: str) -> str:
     return tokens[0]
 
 
+def handshake_fill_status(_: str) -> str:
+    return "not applied"
+
+
 def handshake_extract_deadline(text: str) -> str:
     tokens = text.split('\u00b7')
     if len(tokens) < 2:
@@ -56,6 +60,7 @@ FILTER_MAP = {
     "handshake_extract_type": handshake_extract_type,
     "handshake_extract_duration": handshake_extract_duration,
     "handshake_extract_location": handshake_extract_location,
+    "handshake_fill_status": handshake_fill_status,
     "handshake_extract_deadline": handshake_extract_deadline
 }
 

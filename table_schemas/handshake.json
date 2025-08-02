@@ -9,6 +9,7 @@
         "type",
         "duration",
         "location",
+        "status",
         "deadline"
     ],
     "filters": {
@@ -17,6 +18,7 @@
         "type": "handshake_extract_type",
         "duration": "handshake_extract_duration",
         "location": "handshake_extract_location",
+        "status": "handshake_fill_status",
         "deadline": "handshake_extract_deadline"
     }
 }

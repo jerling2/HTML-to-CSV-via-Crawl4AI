@@ -1,5 +1,6 @@
 from src.file_processor import FileProcessor
 from src.table_generator import TableGenerator
+from src.web_crawl_mode import WebCrawlMode
 
 DATA_PATH = "./data"
 WEB_SCHEMA_PATH = "./web_schemas"
@@ -10,7 +11,7 @@ TSV_OUT_PATH = "./tsv_out"
 
 def main():
     GOODBYE = "Invalid input. Goodbye!"
-    mode = input("Hello! Please select [1] extract json from html or [2] construct csv from json: ")
+    mode = input("Hello! Please select [1] extract json from html [2] construct csv from json or [3] webcrawl mode: ")
     try:
         mode = int(mode)
     except:
@@ -22,6 +23,9 @@ def main():
             program.interact()
         case 2:
             program = TableGenerator(TABLE_SCHEMA_PATH, JSON_OUT_PATH, TSV_OUT_PATH)
+            program.interact()
+        case 3:
+            program = WebCrawlMode()
             program.interact()
         case _:
             return print(GOODBYE)
