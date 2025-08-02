@@ -3,7 +3,7 @@ import csv
 from src.interface import UserMode
 
 
-class ConvertJsonToCSVMode(UserMode):
+class ConvertJsonToTSVMode(UserMode):
     
     def _generate_tsv(self, schema, json_data, out_path):
         selection = []

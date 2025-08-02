@@ -1,7 +1,7 @@
 """
 This mode should define how the python main application functions.
 """
-from src.interface import UserMode, LocalExtractMode, ConvertJsonToCSVMode
+from src.interface import UserMode, LocalExtractMode, ConvertJsonToTSVMode
 
 
 class SystemMode(UserMode):
@@ -20,7 +20,7 @@ class SystemMode(UserMode):
                 program = LocalExtractMode()
                 program.interact()
             case 2:
-                program = ConvertJsonToCSVMode()
+                program = ConvertJsonToTSVMode()
                 program.interact()
             case _:
                 return print(GOODBYE)
