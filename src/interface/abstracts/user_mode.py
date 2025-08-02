@@ -1,7 +1,7 @@
 """
 Abstract class for all modes defined in ../modes
 """
-from src.interface import Shell
+from .shell import Shell
 
 
 USER_STORAGE = {

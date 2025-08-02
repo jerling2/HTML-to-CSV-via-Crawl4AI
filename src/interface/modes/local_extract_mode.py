@@ -1,18 +1,21 @@
 import asyncio
 import json
-from src.interface import UserMode
+from ..abstracts.user_mode import UserMode
+from .json_to_tsv_mode import ConvertJsonToTSVMode
 from src.utils import extract_from_local_file
 
 
 class LocalExtractMode(UserMode):
     
-    def interact(self):
-        html_schema_path = self.prompt_choose('schema_html', "Please choose a schema")
+    def interact(self, html_schema_path=None, html_data_path=None):
+        if not html_schema_path:
+            html_schema_path = self.prompt_choose('schema_html', "Please choose a html schema")
         if not html_schema_path:
             return print("No available html schemas.")
         with open(html_schema_path, 'r') as f:
             schema = json.load(f)
-        html_data_path = self.prompt_choose('data_html', "Please choose html data")
+        if not html_data_path:
+            html_data_path = self.prompt_choose('data_html', "Please choose html data")
         if not html_data_path:
             return print("No available html data.")
         html_data_folder = self.get_basename(html_data_path)
@@ -29,3 +32,6 @@ class LocalExtractMode(UserMode):
             with open(out_path, 'w') as f:
                 json.dump(result, f, indent=2)
             page_num += 1
+        if input('Continue to table [y]? ') == "y":
+            program = ConvertJsonToTSVMode()
+            program.interact(content_data_path=content_out_path)

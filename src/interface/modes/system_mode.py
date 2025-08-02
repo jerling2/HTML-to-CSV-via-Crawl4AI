@@ -1,6 +1,3 @@
-"""
-This mode should define how the python main application functions.
-"""
 from src.interface import UserMode, LocalExtractMode, ConvertJsonToTSVMode
 
 
@@ -10,7 +7,7 @@ class SystemMode(UserMode):
     
     def interact(self):
         GOODBYE = "Invalid input. Goodbye!"
-        mode = input("Hello! Please select [1] extract json from html or [2] construct csv from json: ")
+        mode = input("Hello! Please select [1] extract json from html or [2] construct tsv from json: ")
         try:
             mode = int(mode)
         except:
