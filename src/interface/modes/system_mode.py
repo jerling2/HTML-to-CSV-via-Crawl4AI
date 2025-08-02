@@ -1,7 +1,7 @@
 """
 This mode should define how the python main application functions.
 """
-from src.interface import UserMode
+from src.interface import UserMode, LocalExtractMode, ConvertJsonToCSVMode
 
 
 class SystemMode(UserMode):
@@ -9,4 +9,19 @@ class SystemMode(UserMode):
         super().__init__(base_paths)
     
     def interact(self):
-        print("works!")
+        GOODBYE = "Invalid input. Goodbye!"
+        mode = input("Hello! Please select [1] extract json from html or [2] construct csv from json: ")
+        try:
+            mode = int(mode)
+        except:
+            return print(GOODBYE)
+        match mode:
+            case 1:
+                program = LocalExtractMode()
+                program.interact()
+            case 2:
+                program = ConvertJsonToCSVMode()
+                program.interact()
+            case _:
+                return print(GOODBYE)
+        return

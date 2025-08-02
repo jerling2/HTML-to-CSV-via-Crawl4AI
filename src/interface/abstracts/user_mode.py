@@ -24,6 +24,7 @@ USER_STORAGE = {
     },
 }
 
+
 class UserMode():
 
     def __init__(self, kwargs=None):
@@ -54,28 +55,26 @@ class UserMode():
             )
         return self.shell.construct_path(storage_type, '')
 
-    def ls(self, storage_type, file_name=None, dir_name=None) -> [str]:
-        path = self.get_path(storage_type, file_name, dir_name)
-        if file_name:
-            return self.shell.ls_files(path)
-        else:
+    def ls(self, storage_type, dir_name=None, include_extention=True) -> [str]:
+        path = self.get_path(storage_type, dir_name=dir_name)
+        if not dir_name and USER_STORAGE[storage_type].get('nested', False):
             return self.shell.ls_dirs(path)
+        return self.shell.ls_files(path, "*" + USER_STORAGE[storage_type]['extention'], include_extention=include_extention)
 
-    def _get_user_input_path(storage_type, user_input, dir_name=None):
-        if dir_name and USER_STORAGE[storage_type].get('nested', False):
-            return self.get_path(storage_type, file_name=user_input, dir_name=dir_name)
-        elif USER_STORAGE[storage_type].get('nested', False):
+    def _get_user_input_path(self, storage_type, user_input):
+        if USER_STORAGE[storage_type].get('nested', False):
             return self.get_path(storage_type, dir_name=user_input)
-        else:
-            return self.get_path(storage_type, file_name=user_input)
+        return self.get_path(storage_type, file_name=user_input)
 
-    def prompt_choose(self, storage_type, prompt_msg, dir_name=None) -> str:
-        available = self.ls(storage_type, dir_name=dir_name)
-        user_input = input(prompt_msg + f'{available}: ')
+    def prompt_choose(self, storage_type, prompt_msg) -> str:
+        available = self.ls(storage_type, include_extention=False)
+        if not available:
+            return None
+        user_input = input(prompt_msg + f' {available}: ')
         while user_input not in available:
             print('Invalid selection')
             user_input = input(prompt_msg + f'{available}: ')
-        return self._get_user_input_path(storage_type, user_input, dir_name=dir_name)
+        return self._get_user_input_path(storage_type, user_input)
     
     def prompt_enter(self, storage_type, prompt_msg) -> str:
         user_input = input(prompt_msg + ": ").strip()
@@ -97,5 +96,8 @@ class UserMode():
             self.shell.mkdir(path)
         return path
 
+    def get_basename(self, path) -> str:
+        return self.shell.basename(path)
+    
     def interact(self):
         raise NotImplementedError("The 'interact' method must be implemented in concrete subclasses.")

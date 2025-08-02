@@ -27,8 +27,11 @@ class Shell:
             os.remove(path)
 
     @staticmethod
-    def ls_files(path, glob_pattern="*") -> [str]:
-        return [item.name for item in Path(path).glob(glob_pattern) if item.is_file()]
+    def ls_files(path, glob_pattern="*", include_extention=True) -> [str]:
+        if include_extention:
+            return [item.name for item in Path(path).glob(glob_pattern) if item.is_file()]
+        else:
+            return [item.stem for item in Path(path).glob(glob_pattern) if item.is_file()]
 
     @staticmethod
     def ls_dirs(path, glob_pattern="*") -> [str]:
@@ -38,9 +41,13 @@ class Shell:
     def is_path_taken(path) -> bool:
         return os.path.exists(path)
 
+    @staticmethod
+    def basename(path) -> str:
+        return os.path.basename(path)
+
     @classmethod
     def construct_path(cls, base_type, file_name, *extra_parts):
         base = cls.__base_paths.get(base_type, None)
         if base is None:
             raise Exception(f"Error: {base} path is not initialized in Shell")
-        return os.path.join(base, file_name, extra_parts)
+        return os.path.join(base, file_name, *extra_parts)
