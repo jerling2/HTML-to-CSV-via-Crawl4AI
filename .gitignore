@@ -1,10 +1,10 @@
 # Sensitive Data
-data/*
-json_out/*
-tsv_out/*
+data/content/*
+data/html/*
+data/table/*
 
 # Allow example data
-!data/example 
+!data/html/example 
 
 # Make sure these directories exist
 !data/.gitkeep
