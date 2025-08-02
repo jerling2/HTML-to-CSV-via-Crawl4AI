@@ -1,4 +1,4 @@
-from src.shell import Shell
+from src.interface import Shell
 import csv
 
 

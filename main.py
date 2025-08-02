@@ -1,5 +1,4 @@
-from src.file_processor import FileProcessor
-from src.table_generator import TableGenerator
+from src.interface import FileProcessor, TableGenerator
 
 DATA_PATH = "./data"
 WEB_SCHEMA_PATH = "./web_schemas"
