@@ -1,6 +1,6 @@
 import asyncio
-from src.agent import extract_from_local_file
-from src.shell import Shell
+from src.utils import extract_from_local_file
+from src.interface import Shell
 
 
 class FileProcessor(Shell):
