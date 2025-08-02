@@ -29,9 +29,3 @@ class LocalExtractMode(UserMode):
             with open(out_path, 'w') as f:
                 json.dump(result, f, indent=2)
             page_num += 1
-        
-        # num = 0
-        # for each file path,
-        #   asyncio.run  ( agent )
-        #   output json to path with basename = path_{num}.json
-        #   inc num
