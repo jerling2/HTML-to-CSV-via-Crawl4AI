@@ -3,6 +3,11 @@ data/content/*
 data/html/*
 data/table/*
 
+# These directories need to exist.
+!data/content/.gitkeep
+!data/html/.gitkeep
+!data/table/.gitkeep
+
 # Allow example data
 !data/html/example 
 
