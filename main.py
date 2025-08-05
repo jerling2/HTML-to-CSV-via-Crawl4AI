@@ -1,4 +1,8 @@
+from dotenv import load_dotenv
 from src.interface import SystemMode
+
+
+load_dotenv()
 
 
 if __name__ == "__main__":

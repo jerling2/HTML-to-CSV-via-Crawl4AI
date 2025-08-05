@@ -1,4 +1,4 @@
-from src.interface import UserMode, LocalExtractMode, ConvertJsonToTSVMode
+from src.interface import UserMode, LocalExtractMode, ConvertJsonToTSVMode, DevMode
 
 
 class SystemMode(UserMode):
@@ -18,6 +18,10 @@ class SystemMode(UserMode):
                 program.interact()
             case 2:
                 program = ConvertJsonToTSVMode()
+                program.interact()
+            case 3:
+                print('running dev mode')
+                program = DevMode()
                 program.interact()
             case _:
                 return print(GOODBYE)

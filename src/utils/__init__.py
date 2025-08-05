@@ -1,2 +1,2 @@
-from .agent import extract_from_local_file
+from .agent import Agent
 from .file_manager import generate_tsv 
