@@ -2,11 +2,15 @@ import asyncio
 import json
 from ..abstracts.user_mode import UserMode
 from .json_to_tsv_mode import ConvertJsonToTSVMode
-from src.utils import extract_from_local_file
+from src.utils import Agent
 
 
 class LocalExtractMode(UserMode):
-    
+
+    def __init__(self):
+        super().__init__()
+        self.agent = Agent()
+
     def interact(self, html_schema_path=None, html_data_path=None):
         if not html_schema_path:
             html_schema_path = self.prompt_choose('schema_html', "Please choose a html schema")
@@ -25,7 +29,9 @@ class LocalExtractMode(UserMode):
         content_out_folder = self.get_basename(content_out_path)
         page_num = 0
         for path in paths:
-            result = asyncio.run(extract_from_local_file(path, schema))
+            result = asyncio.run(
+                self.agent.extract_from_local_file(path, schema)
+            )
             if not result:
                 continue
             out_path = self.get_path('data_content', file_name=f'page_{page_num}', dir_name=content_out_folder)
