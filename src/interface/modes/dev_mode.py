@@ -3,8 +3,11 @@ from ..abstracts.user_mode import UserMode
 from src.utils import Agent
 
 class DevMode(UserMode):
-    def __init__(self):
-        self.agent = Agent()
+
+    async def _run(self):
+        async with Agent() as agent:
+            await agent.extract_from_remote('https://uoregon.joinhandshake.com/jobs/10093529', {})
+            await agent.extract_from_remote('https://uoregon.joinhandshake.com/saved-jobs', {})
 
     def interact(self):
-        asyncio.run(self.agent.ping_website('https://uoregon.joinhandshake.com'))
+        asyncio.run(self._run())
