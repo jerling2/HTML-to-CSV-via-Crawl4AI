@@ -3,7 +3,7 @@ import uuid
 import os
 import re
 import traceback
-from crawl4ai import AsyncWebCrawler, JsonCssExtractionStrategy, CrawlerRunConfig, CacheMode, BrowserConfig
+from crawl4ai import AsyncWebCrawler, JsonCssExtractionStrategy, CrawlerRunConfig, CacheMode, BrowserConfig, CrawlResult
 from playwright.async_api import Page, BrowserContext, expect
 
 """
@@ -32,14 +32,21 @@ Otherwise: if the CrawlResult fails, raise a Warning "You might be accessing des
 
 
 class Agent:
-    def __init__(self):
+    def __init__(self, login_url=None, browser_config=None):
         self.login_procedures = LoginProcedure()
         self.session_id = str(uuid.uuid4())
         self.crawler = None
+        self.login_url = login_url
+        self.browser_config = browser_config or BrowserConfig()
 
     async def __aenter__(self):
         """ Execute immediately after entering an `async wait` block """
+        if self.login_url and self.login_url in self.login_procedures:
+            self.crawler = self.login_procedures.auth(self.login_url, self.browser_config)
+        else:
+            self.crawler = AsyncWebCrawler(config=browser_config)
         print("\x1b[1;36m[INIT].... \u2192 Agent\x1b[0m")
+        await self.crawler.start()
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
@@ -56,25 +63,6 @@ class Agent:
         if self.crawler is not None:
             await self.crawler.close()
             self.crawler = None
-
-    async def crawl_remote(self, url, run_config=None, browser_config=None, __num_retries=0):
-        if __num_retries >= 2:
-            await self.__cleanup_crawler()
-            print("\x1b[31mError..... \u2716 reached max number of retries\x1b[0m")
-            return None
-        run_config = run_config or CrawlerRunConfig()
-        browser_config = browser_config or BrowserConfig()
-        if self.crawler is None:
-            self.crawler = AsyncWebCrawler(config=browser_config, verbose=True)
-            await self.crawler.start()
-        result = await self.crawler.arun(url, config=run_config)
-        if result.redirected_url in self.login_procedures:
-            await self.__cleanup_crawler()
-            self.crawler = self.login_procedures.auth(result.redirected_url, browser_config)
-            await self.crawler.start()
-            __num_retries += 1
-            return await self.crawl_remote(url, run_config, browser_config, __num_retries)
-        return result
 
     async def extract_from_local_file(self, file_path, schema):
         if not file_path.startswith("file://"):
@@ -93,8 +81,12 @@ class Agent:
                 return None
             return json.loads(result.extracted_content)
 
-    async def extract_from_remote(self, url, schema):
-        result = await self.crawl_remote(url)
+    async def extract_from_remote(self, url, schema, run_config=None) -> [CrawlResult] or None:
+        if self.crawler is None:
+            raise ValueError('Error: this method must be used in a `async with` block')
+        run_config = run_config or CrawlerRunConfig()
+        result = await self.crawler.arun(url, config=run_config)
+        return result
 
 
 class LoginProcedure:
