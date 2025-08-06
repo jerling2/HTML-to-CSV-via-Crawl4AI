@@ -1,8 +1,9 @@
 import json
 import uuid
 import os
+import re
 from crawl4ai import AsyncWebCrawler, JsonCssExtractionStrategy, CrawlerRunConfig, CacheMode, BrowserConfig
-
+from playwright.async_api import Page, BrowserContext, expect
 
 class Agent:
     def __init__(self):
@@ -26,69 +27,45 @@ class Agent:
                 print("Crawl failed:", result.error_message)
                 return None
             return json.loads(result.extracted_content)
-    
-    async def auth_crawl(self, url, browser_config=None, run_config=None):
-        if not browser_config:
-            browser_config = BrowserConfig()
-        if not run_config:
-            run_config = CrawlerRunConfig()
-        run_config = CrawlerRunConfig(
-            session_id = self.session_id,
-            cache_mode = CacheMode.BYPASS,  #< skip cache for this operation
-        )
-        async with AsyncWebCrawler(config=browser_config, verbose=True) as crawler:
-            result = await crawler.arun(
-                url=url,
-                config=run_config
-            )
-            if not result.success:
-                print("Crawl failed:", result.error_message)
-                return None
-            if result.redirected_url in self.login_manager:
-                await self.login_manager.login(result.redirected_url, result.session_id, crawler)
-            return result #< This should always return a call
 
-    async def probe_website(self, url: str):
-        result = await self.auth_crawl(url, 
-        BrowserConfig(headless=False), #< For debugging
-        CrawlerRunConfig(
-            session_id = self.session_id,
-            cache_mode = CacheMode.BYPASS
-        ))
+    async def ping_website(self, url: str):
+        """
+        TODO: in this current state, this function handles login. Ultimately, 
+        I want this function to check if the crawler is already auth, and if not, 
+        check if it can login (or else raise an error). Then I want it to crawl for data.
+        """
+        crawler = self.login_manager.uoregon_handshake_auth()
+        run_config = CrawlerRunConfig(
+            delay_before_return_html=10.0
+        )
+        await crawler.start()
+        await crawler.arun('https://uoregon.joinhandshake.com/login', config=run_config)
+        await crawler.close()
 
 
 class LoginProcedure:
-    def __init__(self):
-        self.procedures = {
-            "https://uoregon.joinhandshake.com/login": self.uoregon_handshake
-        }
 
     def __contains__(self, url):
         return url in self.procedures
 
-    async def uoregon_handshake(self, session_id, crawler):
+    def uoregon_handshake_auth(self) -> AsyncWebCrawler:
         username = os.getenv("HANDSHAKE_USER")
         password = os.getenv("HANDSHAKE_PASS")
-        run_config = CrawlerRunConfig(
-            session_id=session_id,
-            js_code=[
-                "document.querySelector('a.sso-button').click();",
-                "const username = document.querySelector('input#username');",
-                f"username.value = '{username}';",
-                "const password = document.querySelector('input#password');",
-                f"password.value = '{password}';",
-                "document.querySelector('input.submit').click();",
-            ],
-            delay_before_return_html=10.0 #< for debugging.
-        )
-        result = await crawler.arun(
-            url="https://uoregon.joinhandshake.com/login",
-            config=run_config,
-        )
-        if not result.success:
-            print("Crawl failed (uoregon_handshake):", result.error_message)
-            return None
-        return print(result.redirected_url)
+        crawler = AsyncWebCrawler(config=BrowserConfig(headless=False))
+        async def on_page_context_created(page: Page, context: BrowserContext, **kwargs):
+            await page.goto('https://uoregon.joinhandshake.com/login')
+            await page.locator(".sso-button").click()
+            await page.get_by_placeholder("Username").fill(username)
+            await page.get_by_placeholder("Password").fill(password)
+            await page.get_by_role("button", name="Login").click()
+            await expect(page.get_by_role("heading", name="Enter code in Duo Mobile")).to_be_visible(timeout=60_000)
+            sso_code = await page.get_by_text(re.compile(r"^\d+$")).text_content()
+            print(f"\x1b[32m[AUTH] SSO Code: {sso_code}\x1b[0m")
+            await expect(page.get_by_role("button", name="Yes, this is my device")).to_be_visible(timeout=10_000)
+            await page.get_by_role("button", name="Yes, this is my device").click()
+            return page
+        crawler.crawler_strategy.set_hook('on_page_context_created', on_page_context_created)
+        return crawler
 
     async def login(self, url, session_id, crawler):
         if url not in self.procedures:

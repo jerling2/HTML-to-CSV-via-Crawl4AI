@@ -7,4 +7,4 @@ class DevMode(UserMode):
         self.agent = Agent()
 
     def interact(self):
-        asyncio.run(self.agent.probe_website('https://uoregon.joinhandshake.com'))
+        asyncio.run(self.agent.ping_website('https://uoregon.joinhandshake.com'))
