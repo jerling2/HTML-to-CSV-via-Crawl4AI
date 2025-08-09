@@ -1,4 +1,4 @@
-from src.interface import UserMode, LocalExtractMode, ConvertJsonToTSVMode, DevMode
+from src.interface import UserMode, LocalExtractMode, ConvertJsonToTSVMode, RemoteHandshake
 
 
 class SystemMode(UserMode):
@@ -7,7 +7,7 @@ class SystemMode(UserMode):
     
     def interact(self):
         GOODBYE = "Invalid input. Goodbye!"
-        mode = input("Hello! Please select [1] extract json from html or [2] construct tsv from json: ")
+        mode = input("Hello! Please select: [1] 'Local Extract', [2] 'Json to TSV', or [3] 'Remote Handshake': ")
         try:
             mode = int(mode)
         except:
@@ -20,8 +20,7 @@ class SystemMode(UserMode):
                 program = ConvertJsonToTSVMode()
                 program.interact()
             case 3:
-                print('running dev mode')
-                program = DevMode()
+                program = RemoteHandshake()
                 program.interact()
             case _:
                 return print(GOODBYE)
