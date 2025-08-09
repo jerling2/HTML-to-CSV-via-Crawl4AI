@@ -6,30 +6,6 @@ import traceback
 from crawl4ai import AsyncWebCrawler, JsonCssExtractionStrategy, CrawlerRunConfig, CacheMode, BrowserConfig, CrawlResult
 from playwright.async_api import Page, BrowserContext, expect
 
-"""
-TODO:
-- implement __aenter__(self) to enter an `async with` in Agent
-- implement __aexit(self, exc_type, exc_val, exc_tb) to exit an `async with` in Agent
-
-All that matters is that __aexit__ will close the agent. __aenter__ doesn't matter really.
-
-"I want the Modes to be able to use an agent in the following way":
-
-# Example 1: Extract from a local file
-async with Agent as agent:
-    result = agent.extract_from_local( [file_paths], schema )
-
-# Example 2: Extract from a remote destination
-async with Agent as agent:
-    results: [CrawlResult] = agent.extract_from_remote( [urls], schema )
-
-"Automatic Handling of Auth via LoginProcedure":
-
-When a crawler accesses a destination, I want to check whether the redirected_url is in LoginProcedure.
-If so: then toss out the old crawler and get a new one from LoginProcedures
-Otherwise: if the CrawlResult fails, raise a Warning "You might be accessing destination w/out proper credentials".
-"""
-
 
 class Agent:
     def __init__(self, login_url=None, browser_config=None):
@@ -81,12 +57,18 @@ class Agent:
                 return None
             return json.loads(result.extracted_content)
 
-    async def extract_from_remote(self, url, schema, run_config=None) -> [CrawlResult] or None:
+    async def extract_from_remote(self, url: str, run_config=None) -> [CrawlResult]:
         if self.crawler is None:
             raise ValueError('Error: this method must be used in a `async with` block')
         run_config = run_config or CrawlerRunConfig()
         result = await self.crawler.arun(url, config=run_config)
         return result
+
+    async def extract_many_from_remote(self, urls: [str], run_config=None, dispatcher=None) -> [CrawlResult]:
+        if self.crawler is None:
+            raise ValueError('Error: this method must be used in a `async with` block')
+        results = await self.crawler.arun_many(urls, config=run_config, dispatcher=dispatcher)
+        return results
 
 
 class LoginProcedure:
@@ -117,13 +99,14 @@ class LoginProcedure:
             await page.get_by_placeholder("Username").fill(username)
             await page.get_by_placeholder("Password").fill(password)
             await page.get_by_role("button", name="Login").click()
-            await expect(page.get_by_role("heading", name="Enter code in Duo Mobile")).to_be_visible(timeout=59_000)
+            await expect(page.get_by_role("heading", name="Enter code in Duo Mobile")).to_be_visible(timeout=10_000)
             sso_code = await page.get_by_text(re.compile(r"^\d+$")).text_content()
             print(f"\x1b[1;93m[AUTH] SSO : {sso_code}\x1b[0m")
-            await expect(page.get_by_role("button", name="Yes, this is my device")).to_be_visible(timeout=10_000)
+            await expect(page.get_by_role("button", name="Yes, this is my device")).to_be_visible(timeout=60_000)
             print(f"\x1b[1;93m[SUCCESS]\x1b[0m")
             await page.get_by_role("button", name="Yes, this is my device").click()
             await expect(page.get_by_role("heading", name="University of Oregon")).to_be_visible(timeout=10_000)
+            # Suggestion: save cookies here, and set a flag. If the user intends to reuse the same context, the cookies can be restored.
             return page
         crawler.crawler_strategy.set_hook('on_page_context_created', on_page_context_created)
         return crawler
