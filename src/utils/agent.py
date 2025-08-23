@@ -57,6 +57,13 @@ class Agent:
                 return None
             return json.loads(result.extracted_content)
 
+    async def extract_from_raw(self, raw, run_config=None):
+        if self.crawler is None:
+            raise ValueError('Error: this method must be used in a `async with` block')
+        run_config = run_config or CrawlerRunConfig()
+        result = await self.crawler.arun(f'raw://{raw}', config=run_config)
+        return result
+
     async def extract_from_remote(self, url: str, run_config=None) -> [CrawlResult]:
         if self.crawler is None:
             raise ValueError('Error: this method must be used in a `async with` block')

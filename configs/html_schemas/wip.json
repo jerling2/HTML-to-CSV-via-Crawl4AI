@@ -1,0 +1,11 @@
+{
+    "name": "Handshake",
+    "baseSelector": "main > div",
+    "fields": [
+        {
+            "name": "content",
+            "selector": "main > div > div + div + div + div > div > div",
+            "type": "html"
+        }
+    ]
+}
