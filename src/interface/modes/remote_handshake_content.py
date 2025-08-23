@@ -8,7 +8,7 @@ from src.utils import (
     normalize_markdown,
     embed_texts
 )
-from src.database import VectorDatabase
+from src.systems import VectorDatabase
 from crawl4ai import (
     CrawlerRunConfig,
     BrowserConfig, 
