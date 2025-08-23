@@ -2,7 +2,7 @@
 data/content/*
 data/html/*
 data/table/*
-volumes
+volumes/
 
 # These directories need to exist.
 !data/content/.gitkeep
