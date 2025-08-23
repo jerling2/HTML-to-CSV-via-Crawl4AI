@@ -1,7 +1,9 @@
+
 # Sensitive Data
 data/content/*
 data/html/*
 data/table/*
+volumes
 
 # These directories need to exist.
 !data/content/.gitkeep
