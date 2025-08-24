@@ -1,25 +1,87 @@
+"""
+The Database resource should be a singleton (e.g. Shell)
+
+- list collections
+- add collection
+- drop collection
+- ...
+
+Then from a interface.mode, the user can interact with the database resource.
+
+The database will be considered *immutable* after initialization. That is, for simplicity, I want it so that a database's format doesn't change after creation.
+"""
+import os
+import json
 from pymilvus import MilvusClient, DataType
 
 
 class VectorDatabase:
+    __instance = None
+    __client = None
 
-    def __init__(self, collection_name):
-        self.client = MilvusClient(
-            uri="http://localhost:19530",
-            token="root:Milvus"
-        )
-        self.collection_name = collection_name
+    def __new__(cls):
+        if cls.__instance is None:
+            cls.__instance = super().__new__(cls)
+            cls.__client = MilvusClient(
+                uri=os.getenv("MILVUS_URI"),
+                token=os.getenv("MILVUS_TOK")
+            )
+        return cls.__instance
 
-    def __enter__(self):
-        self.client.load_collection(
-            collection_name=self.collection_name
-        )
-        return self
+    @staticmethod
+    def _load_config(json_path):
+        with open(json_path) as f:
+            config = json.load(f)
+        for field_dict in config['fields'].values():
+            if (data_type := field_dict.get('datatype', None)):
+                field_dict['datatype'] = DataType[data_type]
+        return config
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self.client.release_collection(
-            collection_name=self.collection_name
+    @staticmethod
+    def _load_schema(config): # -> schema
+        schema = MilvusClient.create_schema()
+        for name, attributes in config['fields'].items():
+            schema.add_field(field_name=name, **attributes)
+        return schema
+
+    def _load_index_params(cls, config): # -> index_params
+        index_params = cls.__client.prepare_index_params()
+        for name, attributes in config['indices'].items():
+            index_params.add_index(field_name=name,  index_type="AUTOINDEX", metric_type="COSINE" )
+        return index_params
+    
+    def create_collection(cls, collection_name, json_path):
+        config = cls._load_config(json_path)
+        schema = cls._load_schema(config)
+        index_params = cls._load_index_params(config)
+        cls.__client.create_collection(
+            collection_name=collection_name,
+            schema=schema,
+            index_params=index_params
         )
-        if exc_type:
-            print(f"An exception occurred: {exc_val}")
-        return False
+
+    def drop_collection(cls, collection_name):
+        cls.__client.drop_collection(
+            collection_name=collection_name
+        )
+
+    def is_name_taken(cls, name):
+        return name in cls.list_collections()
+
+    def load_collection(cls, collection_name):
+        cls.__client.load_collection(
+            collection_name=collection_name
+        )
+
+    def release_collection(cls, collection_name):
+        cls.__client.release_collection(
+            collection_name=collection_name
+        )
+
+    def list_collections(cls):
+        return cls.__client.list_collections()
+
+    def describe_collection(cls, collection_name):
+        return cls.__client.describe_collection(
+            collection_name=collection_name
+        )

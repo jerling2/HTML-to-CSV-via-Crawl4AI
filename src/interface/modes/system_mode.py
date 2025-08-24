@@ -3,7 +3,8 @@ from src.interface import (
     LocalExtractMode,
     ConvertJsonToTSVMode,
     RemoteHandshake,
-    RemoteHandshakeContent
+    RemoteHandshakeContent,
+    DatabaseMode
 )
 
 class SystemMode(UserMode):
@@ -12,7 +13,7 @@ class SystemMode(UserMode):
     
     def interact(self):
         GOODBYE = "Invalid input. Goodbye!"
-        mode = input("Hello! Please select: [1] 'Local Extract', [2] 'Json to TSV', 'Remote Handshake', or [4] 'Remote Handshake Content': ")
+        mode = input("  [1] 'Local Extract'\n  [2] 'Json to TSV'\n  [3] 'Remote Handshake'\n  [4] 'Remote Handshake Content'\n  [5] 'Database'\nHello! Please select a mode: ")
         try:
             mode = int(mode)
         except:
@@ -29,6 +30,9 @@ class SystemMode(UserMode):
                 program.interact()
             case 4:
                 program = RemoteHandshakeContent()
+                program.interact()
+            case 5:
+                program = DatabaseMode()
                 program.interact()
             case _:
                 return print(GOODBYE)
