@@ -1,0 +1,61 @@
+{
+    "description": "Complementary table schema for the `handshake` web schema",
+    "selector": "cards",
+    "fields": {
+        "job_id": {
+            "datatype": "INT64",
+            "is_primary": true,
+            "auto_id": true
+        },
+        "href": {
+            "datatype": "VARCHAR",
+            "max_length": 512
+        },
+        "company": {
+            "datatype": "VARCHAR",
+            "max_length": 512
+        },
+        "position": {
+            "datatype": "VARCHAR",
+            "max_length": 512
+        },
+        "pay": {
+            "datatype": "VARCHAR",
+            "max_length": 512
+        },
+        "datatype":  {
+            "datatype": "VARCHAR",
+            "max_length": 512
+        },
+        "duration":  {
+            "datatype": "VARCHAR",
+            "max_length": 512
+        },
+        "location":  {
+            "datatype": "VARCHAR",
+            "max_length": 512
+        },
+        "deadline":  {
+            "datatype": "VARCHAR",
+            "max_length": 512
+        },
+        "summary_vector": {
+            "datatype": "FLOAT_VECTOR",
+            "dim": 768
+        }
+    },
+    "indices": {
+        "summary_vector": {
+            "index_type": "AUTOINDEX",
+            "metric_type": "COSINE"
+        }
+    },
+    "transformers": {
+        "href": "handshake_extend_href",
+        "pay": "handshake_extract_pay",
+        "datatype": "handshake_extract_type",
+        "duration": "handshake_extract_duration",
+        "location": "handshake_extract_location",
+        "deadline": "handshake_extract_deadline"
+    }
+}
