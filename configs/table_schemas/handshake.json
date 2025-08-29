@@ -2,6 +2,7 @@
     "description": "Complementary table schema for the `handshake` web schema",
     "selector": "cards",
     "headers": [
+        "job_id",
         "href",
         "company",
         "position",
@@ -9,14 +10,17 @@
         "type",
         "duration",
         "location",
-        "deadline"
+        "deadline",
+        "apply_type"
     ],
-    "filters": {
+    "transformers": {
+        "job_id": "handshake_extract_job_id",
         "href": "handshake_extend_href",
         "pay": "handshake_extract_pay",
         "type": "handshake_extract_type",
         "duration": "handshake_extract_duration",
         "location": "handshake_extract_location",
-        "deadline": "handshake_extract_deadline"
+        "deadline": "handshake_extract_deadline",
+        "apply_type": "handshake_normalize_apply_type"
     }
 }

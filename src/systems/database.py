@@ -1,15 +1,3 @@
-"""
-The Database resource should be a singleton (e.g. Shell)
-
-- list collections
-- add collection
-- drop collection
-- ...
-
-Then from a interface.mode, the user can interact with the database resource.
-
-The database will be considered *immutable* after initialization. That is, for simplicity, I want it so that a database's format doesn't change after creation.
-"""
 import os
 import json
 from pymilvus import MilvusClient, DataType
@@ -85,3 +73,16 @@ class VectorDatabase:
         return cls.__client.describe_collection(
             collection_name=collection_name
         )
+
+    def upsert(cls, collection_name, data):
+        return cls.__client.upsert(
+            collection_name=collection_name,
+            data=data
+        )
+
+    def query(cls, collection_name, **kwargs):
+        return cls.__client.query(
+            collection_name=collection_name,
+            **kwargs
+        )
+

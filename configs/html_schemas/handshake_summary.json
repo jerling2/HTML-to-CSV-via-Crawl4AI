@@ -3,7 +3,7 @@
     "baseSelector": "main > div",
     "fields": [
         {
-            "name": "content",
+            "name": "job_summary",
             "selector": "main > div > div + div + div + div > div > div",
             "type": "html"
         }

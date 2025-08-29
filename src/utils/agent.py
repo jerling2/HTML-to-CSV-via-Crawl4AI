@@ -106,13 +106,13 @@ class LoginProcedure:
             await page.get_by_placeholder("Username").fill(username)
             await page.get_by_placeholder("Password").fill(password)
             await page.get_by_role("button", name="Login").click()
-            await expect(page.get_by_role("heading", name="Enter code in Duo Mobile")).to_be_visible(timeout=10_000)
+            await expect(page.get_by_role("heading", name="Enter code in Duo Mobile")).to_be_visible(timeout=60_000)
             sso_code = await page.get_by_text(re.compile(r"^\d+$")).text_content()
             print(f"\x1b[1;93m[AUTH] SSO : {sso_code}\x1b[0m")
             await expect(page.get_by_role("button", name="Yes, this is my device")).to_be_visible(timeout=60_000)
             print(f"\x1b[1;93m[SUCCESS]\x1b[0m")
             await page.get_by_role("button", name="Yes, this is my device").click()
-            await expect(page.get_by_role("heading", name="University of Oregon")).to_be_visible(timeout=10_000)
+            await expect(page.get_by_role("heading", name="University of Oregon")).to_be_visible(timeout=60_000)
             # Suggestion: save cookies here, and set a flag. If the user intends to reuse the same context, the cookies can be restored.
             return page
         crawler.crawler_strategy.set_hook('on_page_context_created', on_page_context_created)

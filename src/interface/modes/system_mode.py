@@ -3,8 +3,9 @@ from src.interface import (
     LocalExtractMode,
     ConvertJsonToTSVMode,
     RemoteHandshake,
-    RemoteHandshakeContent,
-    DatabaseMode
+    RemoteHandshakeSummary,
+    DatabaseMode,
+    DevMode
 )
 
 class SystemMode(UserMode):
@@ -29,10 +30,13 @@ class SystemMode(UserMode):
                 program = RemoteHandshake()
                 program.interact()
             case 4:
-                program = RemoteHandshakeContent()
+                program = RemoteHandshakeSummary()
                 program.interact()
             case 5:
                 program = DatabaseMode()
+                program.interact()
+            case 6:
+                program = DevMode()
                 program.interact()
             case _:
                 return print(GOODBYE)
