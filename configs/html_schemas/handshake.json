@@ -13,6 +13,12 @@
             "type": "list",
             "fields": [
                 {
+                    "name": "job_id",
+                    "selector": "main > div > h1 + div > div > a",
+                    "type": "attribute",
+                    "attribute": "href"
+                },
+                {
                     "name": "href",
                     "selector": "main > div > h1 + div > div > a",
                     "type": "attribute",
@@ -51,6 +57,11 @@
                 {
                     "name": "deadline",
                     "selector": "main > div > h1 + div > div > a + div + div > div + div > div > span > span",
+                    "type": "text"
+                },
+                {
+                    "name": "apply_type",
+                    "selector": "main > div div > button span:last-child",
                     "type": "text"
                 }
             ]

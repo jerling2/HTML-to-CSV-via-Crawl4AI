@@ -17,7 +17,7 @@ class DatabaseMode(UserMode):
         WELCOME_MSG = "\x1b[1;36mWelcome to the Database Terminal!\x1b[0;36m (^C to Quit)\x1b[0m"
         ERROR_NO_AVAILABLE_COLLECTIONS = "\x1b[1mError: No available collections\x1b[0m\n" + WELCOME_MSG
         print(WELCOME_MSG)
-        while (mode := input("\x1b[93m  [1] 'Create Collection'\n  [2] 'List Collections'\n  [3] 'Describe Collection'\n  [4] 'Drop Collection'\x1b[0m\n[Database Mode] Please choose an option: ")):
+        while (mode := input("\x1b[93m  [1] 'Create Collection'\n  [2] 'List Collections'\n  [3] 'Describe Collection'\n  [4] 'Drop Collection'\n  [5] 'LIMIT Query a Collection'\x1b[0m\n[Database Mode] Please choose an option: ")):
             try:
                 mode = int(mode)
             except:
@@ -49,6 +49,27 @@ class DatabaseMode(UserMode):
                         print(ERROR_NO_AVAILABLE_COLLECTIONS)
                         continue
                     self.db.drop_collection(collection_name)
+                case 5:
+                    collection_name = self.prompt_choose('milvus', "Please choose a collection")
+                    if collection_name is None:
+                        print(ERROR_NO_AVAILABLE_COLLECTIONS)
+                        continue
+                    while True:
+                        try:
+                            limit = int(input("Enter a limit: "))
+                            if limit > 0:
+                                break
+                            print("Error: out of range.")
+                        except:
+                            print("invalid input.")
+                    self.db.load_collection(collection_name)
+                    res = self.db.query(
+                        collection_name,
+                        limit=limit,
+                        output_fields=["*"]
+                    )
+                    self.db.release_collection(collection_name)
+                    print(res)
                 case _:
                     print(INVALID_INPUT)
             print(WELCOME_MSG)

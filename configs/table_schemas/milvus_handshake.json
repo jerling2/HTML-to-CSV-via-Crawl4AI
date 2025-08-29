@@ -1,11 +1,10 @@
 {
-    "description": "Complementary table schema for the `handshake` web schema",
+    "description": "[MILVUS] Complementary table schema for the `handshake` web schema",
     "selector": "cards",
     "fields": {
         "job_id": {
             "datatype": "INT64",
-            "is_primary": true,
-            "auto_id": true
+            "is_primary": true
         },
         "href": {
             "datatype": "VARCHAR",
@@ -23,7 +22,7 @@
             "datatype": "VARCHAR",
             "max_length": 512
         },
-        "datatype":  {
+        "type":  {
             "datatype": "VARCHAR",
             "max_length": 512
         },
@@ -39,6 +38,10 @@
             "datatype": "VARCHAR",
             "max_length": 512
         },
+        "apply_type":  {
+            "datatype": "VARCHAR",
+            "max_length": 512
+        },
         "summary_vector": {
             "datatype": "FLOAT_VECTOR",
             "dim": 768
@@ -51,11 +54,13 @@
         }
     },
     "transformers": {
+        "job_id": "handshake_extract_job_id",
         "href": "handshake_extend_href",
         "pay": "handshake_extract_pay",
-        "datatype": "handshake_extract_type",
+        "type": "handshake_extract_type",
         "duration": "handshake_extract_duration",
         "location": "handshake_extract_location",
-        "deadline": "handshake_extract_deadline"
+        "deadline": "handshake_extract_deadline",
+        "apply_type": "handshake_normalize_apply_type"
     }
 }

@@ -1,8 +1,41 @@
 import csv
+from .string_transformer import Transformer
+import json
 
 
+def clean_extracted_content(table_schema, json_data):
+    transformer = Transformer()
+    entities = []
+    for data in json_data:
+        entities.extend(data.get(table_schema['selector'], []))        
+    fields = table_schema['fields']
+    for entity in entities:
+        for field in fields:
+            transformer_name = table_schema['transformers'].get(field, None)
+            raw_text = entity.get(field, "")
+            modified_text = transformer.apply_transformation(transformer_name, raw_text)
+            entity[field] = modified_text
+    return entities
+
+
+def normalize_entity_data(table_schema, entity_data):
+    fields = table_schema['fields']
+    for entity in entity_data:
+        for field_name, field_props in fields.items():
+            data = entity.get(field_name, None)
+            datatype = field_props.get('datatype', '')
+            dim = field_props.get('dim', 0)
+            if data and datatype == "INT64":
+                entity[field_name] = int(data)
+            if not data and datatype == "FLOAT_VECTOR":
+                entity[field_name] = [0] * dim #< Dummy vector to satisfy Milvus vector requirement
+
+
+"""
+Depreciated (transitioning to Milvus database instead of using the file system)
+"""
 def generate_tsv(schema, json_data, out_path):
-    filters = Filter()
+    transformer = Transformer()
     selection = []
     for data in json_data:
         selection.extend(data.get(schema['selector'], []))            
@@ -11,70 +44,11 @@ def generate_tsv(schema, json_data, out_path):
     for item in selection:
         row = []
         for header in headers:
-            filter_name = schema['filters'].get(header, None)
+            transformer_name = schema['transformers'].get(header, None)
             raw_text = item.get(header, "")
-            modified_text = filters.apply_filter(filter_name, raw_text)
+            modified_text = transformer.apply_transformation(transformer_name, raw_text)
             row.append(modified_text)
         rows.append(row)
     with open(out_path, "w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f, delimiter="\t")
         writer.writerows(rows)
-
-
-class Filter:
-    @staticmethod
-    def NOOP(text: str) -> str:
-        return text
-
-    @staticmethod
-    def handshake_extend_href(text: str) -> str:
-        result = "https://uoregon.joinhandshake.com" + text
-        return result
-
-    @staticmethod
-    def handshake_extract_pay(text: str) -> str:
-        tokens = text.split('\u00b7')
-        filtered = list(filter(lambda t: "/" in t, tokens))
-        if not filtered:
-            return "N/A"
-        return filtered[0].strip()
-
-    @staticmethod
-    def handshake_extract_type(text: str) -> str:
-        tokens = text.split('\u00b7')
-        check = ["Part-time", "Full-time", "Internship"]
-        filtered = list(filter(lambda t: any(word in t for word in check), tokens))
-        if not filtered:
-            return "N/A"
-        return filtered[0].strip()
-
-    @staticmethod
-    def handshake_extract_duration(text: str) -> str:
-        tokens = text.split('\u00b7')
-        filtered = list(filter(lambda t: "\u2014" in t, tokens))
-        if not filtered:
-            return "N/A"
-        return filtered[0].strip()
-
-    @staticmethod
-    def handshake_extract_location(text: str) -> str:
-        tokens = text.split('\u00b7')
-        if not tokens:
-            return "N/A"
-        return tokens[0]
-
-    @staticmethod
-    def handshake_extract_deadline(text: str) -> str:
-        tokens = text.split('\u00b7')
-        if len(tokens) < 2:
-            return "N/A"
-        return tokens[1]
-
-    def apply_filter(self, filter_name: str | None, text: str) -> str:
-        if filter_name is None:
-            return self.NOOP(text)
-        filter_method = getattr(Filter, filter_name, None)
-        if callable(filter_method):
-            return filter_method(text)
-        else:
-            return self.NOOP(text)
