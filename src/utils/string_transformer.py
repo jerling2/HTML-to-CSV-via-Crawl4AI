@@ -1,8 +1,3 @@
-"""
-Use to preprocess text before writing to a database or file.
-"""
-
-
 class Transformer:
     
     def apply_transformation(self, function_name: str | None, text: str) -> str:
@@ -59,7 +54,7 @@ class Transformer:
         tokens = text.split('\u00b7')
         if not tokens:
             return "N/A"
-        return tokens[0]
+        return tokens[0].strip()
 
     @staticmethod
     def handshake_extract_deadline(text: str) -> str:

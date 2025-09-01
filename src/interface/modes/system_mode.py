@@ -5,7 +5,6 @@ from src.interface import (
     RemoteHandshake,
     RemoteHandshakeSummary,
     DatabaseMode,
-    DevMode
 )
 
 class SystemMode(UserMode):
@@ -34,9 +33,6 @@ class SystemMode(UserMode):
                 program.interact()
             case 5:
                 program = DatabaseMode()
-                program.interact()
-            case 6:
-                program = DevMode()
                 program.interact()
             case _:
                 return print(GOODBYE)

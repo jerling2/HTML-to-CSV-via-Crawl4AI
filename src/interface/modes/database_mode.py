@@ -1,6 +1,3 @@
-"""
-Interact with the database system
-"""
 import json
 from ..abstracts.user_mode import UserMode
 from src.systems import VectorDatabase

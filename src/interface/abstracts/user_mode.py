@@ -120,5 +120,14 @@ class UserMode():
     def get_basename(self, path) -> str:
         return self.shell.basename(path)
 
+    def get_paths_from_folder(self, storage_type, path_to_folder):
+        dir_name = self.get_basename(path_to_folder)
+        file_names =  self.ls(storage_type, dir_name=dir_name, include_extention=False)
+        file_paths = [
+            self.get_path(storage_type, dir_name=dir_name, file_name=file_name)
+            for file_name in file_names
+        ]
+        return file_paths
+
     def interact(self):
         raise NotImplementedError("The 'interact' method must be implemented in concrete subclasses.")

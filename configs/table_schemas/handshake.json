@@ -1,18 +1,72 @@
 {
-    "description": "Complementary table schema for the `handshake` web schema",
+    "description": "[MILVUS] Complementary table schema for the `handshake` web schema",
     "selector": "cards",
-    "headers": [
-        "job_id",
-        "href",
-        "company",
-        "position",
-        "pay",
-        "type",
-        "duration",
-        "location",
-        "deadline",
-        "apply_type"
-    ],
+    "fields": {
+        "entity_id": {
+            "datatype": "INT64",
+            "is_primary": true,
+            "auto_id": true
+        },
+        "job_id": {
+            "datatype": "INT64"
+        },
+        "chunk_id": {
+            "datatype": "INT64"
+        },
+        "chunk": {
+            "datatype": "VARCHAR",
+            "max_length": 1024
+        },
+        "href": {
+            "datatype": "VARCHAR",
+            "max_length": 512
+        },
+        "company": {
+            "datatype": "VARCHAR",
+            "max_length": 512
+        },
+        "position": {
+            "datatype": "VARCHAR",
+            "max_length": 512
+        },
+        "pay": {
+            "datatype": "VARCHAR",
+            "max_length": 512
+        },
+        "type":  {
+            "datatype": "VARCHAR",
+            "max_length": 512
+        },
+        "duration":  {
+            "datatype": "VARCHAR",
+            "max_length": 512
+        },
+        "location":  {
+            "datatype": "VARCHAR",
+            "max_length": 512
+        },
+        "deadline":  {
+            "datatype": "VARCHAR",
+            "max_length": 512
+        },
+        "apply_type":  {
+            "datatype": "VARCHAR",
+            "max_length": 512
+        },
+        "summary_vector": {
+            "datatype": "FLOAT_VECTOR",
+            "dim": 768
+        }
+    },
+    "indices": {
+        "job_id": {
+            "index_type": "AUTOINDEX"
+        },
+        "summary_vector": {
+            "index_type": "AUTOINDEX",
+            "metric_type": "COSINE"
+        }
+    },
     "transformers": {
         "job_id": "handshake_extract_job_id",
         "href": "handshake_extend_href",
