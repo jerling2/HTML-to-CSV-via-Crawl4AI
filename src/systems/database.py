@@ -80,6 +80,12 @@ class VectorDatabase:
             data=data
         )
 
+    def insert(cls, collection_name, data):
+        return cls.__client.insert(
+            collection_name=collection_name,
+            data=data
+        )
+
     def query(cls, collection_name, **kwargs):
         return cls.__client.query(
             collection_name=collection_name,
